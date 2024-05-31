@@ -1,0 +1,109 @@
+﻿@page "/event-registrations"
+@using Microsoft.EntityFrameworkCore
+@using CommunityEventPlanner.Data
+@inject IDbContextFactory<EventDataContext> EventDataContextFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Event Registrations</PageTitle>
+
+<style>
+    .registration-panel {
+        background-color: white;
+        color: black; /* Ensure text inside the panel is black */
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        margin: 5rem auto; /* Centers the panel horizontally and adds space from the top */
+    }
+
+    .registration-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: url('images/background.jpg') no-repeat center center fixed;
+        background-size: cover;
+        padding: 2rem; /* Add padding to ensure the content is not too close to the edges */
+    }
+
+    /* Add a black outline around the table data */
+    .registration-panel table td {
+        border: 1px solid black;
+        padding: 8px;
+    }
+</style>
+
+<div class="registration-container">
+    <div class="registration-panel">
+        <h3>Event Registrations</h3>
+
+        @if (AuthenticationStatus.IsLoggedIn)
+        {
+            @if (IsLoading)
+            {
+                <p>Loading...</p>
+            }
+            else
+            {
+                @if (Registrations.Count == 0)
+                {
+                    <p>No registrations found.</p>
+                }
+                else
+                {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Event</th>
+                                <th>User</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var registration in Registrations.OrderBy(r => r.Event.Description))
+                            {
+                                <tr>
+                                    <td>@registration.Event.Description</td>
+                                    <td>@registration.User.Username</td>
+                                    <td>@registration.User.Email</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            }
+        }
+        else
+        {
+            <p style="text-align: center;">Unauthorized user.</p>
+        }
+
+        <div class="text-center mt-4">
+            <button class="btn btn-primary" @onclick="NavigateToIndex">Back to Home</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<EventRegistration> Registrations { get; set; } = new List<EventRegistration>();
+    private bool IsLoading { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using (var context = await EventDataContextFactory.CreateDbContextAsync())
+        {
+            DateOnly currentDate = DateOnly.FromDateTime(DateTime.Now);
+            Registrations = await context.EventRegistrations
+                .Include(er => er.Event)
+                .Include(er => er.User)
+                .Where(er => er.Event.Date > currentDate) // Filter registrations by event date
+                .ToListAsync();
+        }
+        IsLoading = false;
+    }
+
+    private void NavigateToIndex()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}

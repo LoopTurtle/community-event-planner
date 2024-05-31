@@ -1,0 +1,162 @@
+﻿@page "/"
+@using Microsoft.EntityFrameworkCore
+@using CommunityEventPlanner.Data
+@using CommunityEventPlanner.Services
+@inject IDbContextFactory<EventDataContext> EventDataContextFactory
+@inject NavigationManager NavigationManager
+@inject EventSignUpService EventSignUpService
+
+<PageTitle>Community Events</PageTitle>
+
+<style>
+    .event-panel {
+        background-color: white;
+        color: black; /* Ensure text inside the panel is black */
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        margin: 5rem auto; /* Centers the panel horizontally and adds space from the top */
+    }
+
+    .event-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: url('images/background.jpg') no-repeat center center fixed;
+        background-size: cover;
+        padding: 2rem; /* Add padding to ensure the content is not too close to the edges */
+    }
+
+    .event-panel h3 {
+        color: black; /* Ensure the title text is black */
+    }
+
+    .event-panel label {
+        color: black; /* Ensure label text is black */
+    }
+</style>
+
+@if (!AuthenticationStatus.IsLoggedIn)
+{
+    <div class="event-container">
+        <div class="event-panel text-center">
+            <p>Please log in.</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="text-center mb-4">
+        <button class="btn btn-info" @onclick="NavigateToEventRegistrations">View Event Registrations</button>
+    </div>
+
+    @if (ShowCreate)
+    {
+        <div class="event-container">
+            <div class="event-panel">
+                <h3>Add a New Event</h3>
+                <EditForm Model="@NewEvent" OnValidSubmit="CreateNewEvent">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="form-group">
+                        <label for="Description">Description</label>
+                        <InputText id="Description" class="form-control" @bind-Value="NewEvent.Description" />
+                        <ValidationMessage For="@(() => NewEvent.Description)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Date">Date</label>
+                        <InputDate id="Date" class="form-control" @bind-Value="NewEvent.Date" />
+                        <ValidationMessage For="@(() => NewEvent.Date)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="StartTime">Start Time</label>
+                        <InputText id="StartTime" class="form-control" @bind-Value="NewEvent.StartTime" />
+                        <ValidationMessage For="@(() => NewEvent.StartTime)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="OrganiserUsername">Organiser Username</label>
+                        <InputText id="OrganiserUsername" class="form-control" @bind-Value="NewEvent.OrganiserUsername" />
+                        <ValidationMessage For="@(() => NewEvent.OrganiserUsername)" />
+                    </div>
+
+                    <div class="form-group text-center">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="form-group row">
+            <div class="col-12 d-flex justify-content-center">
+                <button name="submit" type="submit" class="btn btn-primary" @onclick="ShowCreateForm">Add a New Event</button>
+            </div>
+        </div>
+        <p></p>
+
+        @if (OurEvents != null && OurEvents.Count > 0)
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-bordered table-light border-dark">
+                    <thead>
+                        <tr>
+                            <th scope="col">Description</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Start Time</th>
+                            <th scope="col">Organiser</th>
+                            <th scope="col">Sign Up</th>
+                            <th scope="col">Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var Event in OurEvents)
+                        {
+                            @if (!ShowEdit || Event.Id != EditingId)
+                            {
+                                <tr>
+                                    <td>@Event.Description</td>
+                                    <td>@Event.Date</td>
+                                    <td>@Event.StartTime</td>
+                                    <td>@Event.OrganiserUsername</td>
+                                    <td><button class="btn btn-primary" @onclick="() => NavigateToSignUp(Event.Id)">Sign Up</button></td>
+                                    <td><button name="submit" type="submit" class="btn btn-primary" @onclick="() => ShowEditForm(Event)">Edit</button></td>
+                                </tr>
+                            }
+                            else
+                            {
+                                if (EventToUpdate != null && EventToUpdate.Id == Event.Id)
+                                {
+                                    <tr>
+                                        <td><InputText id="Description" class="form-control" @bind-Value="EventToUpdate.Description" /></td>
+                                        <td><InputDate id="Date" class="form-control" @bind-Value="EventToUpdate.Date" /></td>
+                                        <td><InputText id="StartTime" class="form-control" @bind-Value="EventToUpdate.StartTime" /></td>
+                                        <td><InputText id="OrganiserUsername" class="form-control" @bind-Value="EventToUpdate.OrganiserUsername" /></td>
+                                        <td><button name="submit" type="submit" class="btn btn-primary" @onclick="UpdateEvent">Save</button></td>
+                                        <td></td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td>@Event.Description</td>
+                                        <td>@Event.Date</td>
+                                        <td>@Event.StartTime</td>
+                                        <td>@Event.OrganiserUsername</td>
+                                        <td></td>
+                                        <td><button name="submit" type="submit" class="btn btn-primary" @onclick="() => ShowEditForm(Event)">Edit</button></td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+}

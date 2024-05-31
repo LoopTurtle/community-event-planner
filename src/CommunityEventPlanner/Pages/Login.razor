@@ -1,0 +1,95 @@
+﻿@page "/login"
+@using Microsoft.EntityFrameworkCore
+@using CommunityEventPlanner.Data
+@inject IDbContextFactory<EventDataContext> EventDataContextFactory;
+@inject NavigationManager NavigationManager;
+
+<PageTitle>Login</PageTitle>
+
+<style>
+    .login-panel {
+        background-color: white;
+        color: black; /* Ensure text inside the panel is black */
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        margin: 5rem auto; /* Centers the panel horizontally and adds space from the top */
+    }
+
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: url('images/background.jpg') no-repeat center center fixed;
+        background-size: cover;
+    }
+
+    .login-panel h2 {
+        color: black; /* Ensure the title text is black */
+    }
+
+    .login-panel label {
+        color: black; /* Ensure label text is black */
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-panel">
+        <h2 class="text-center">Login</h2>
+        <EditForm Model="@LoginModel" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="Username">Username</label>
+                <InputText id="Username" class="form-control" @bind-Value="LoginModel.Username" />
+                <ValidationMessage For="@(() => LoginModel.Username)" />
+            </div>
+
+            <div class="form-group">
+                <label for="Password">Password</label>
+                <InputText id="Password" type="password" class="form-control" @bind-Value="LoginModel.Password" />
+                <ValidationMessage For="@(() => LoginModel.Password)" />
+            </div>
+
+            <p></p>
+            <p></p>
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+
+            @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <div class="alert alert-danger mt-2">@ErrorMessage</div>
+            }
+
+            <p class="mt-3">Don't have an account? <a href="/register">Register here</a></p>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private LoginModel LoginModel { get; set; } = new LoginModel();
+    private string ErrorMessage { get; set; }
+
+    private async Task HandleLogin()
+    {
+        var context = await EventDataContextFactory.CreateDbContextAsync();
+        var user = await context.Users
+            .FirstOrDefaultAsync(u => u.Username == LoginModel.Username && u.Password == LoginModel.Password);
+
+        if (user != null)
+        {
+            // Set authentication state
+            AuthenticationStatus.IsLoggedIn = true;
+            AuthenticationStatus.Username = user.Username;
+
+            // Redirect to the index page
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            ErrorMessage = "Invalid username or password.";
+        }
+    }
+}

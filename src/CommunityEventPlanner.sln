@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34723.18
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommunityEventPlanner", "CommunityEventPlanner\CommunityEventPlanner.csproj", "{D2D65F62-5950-405D-8571-1317131F6740}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommunityEventPlanner.Tests", "CommunityEventPlanner.Tests\CommunityEventPlanner.Tests.csproj", "{99D0AED7-9C51-49A1-AB8E-E73FB6ABCED6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D2D65F62-5950-405D-8571-1317131F6740}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2D65F62-5950-405D-8571-1317131F6740}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2D65F62-5950-405D-8571-1317131F6740}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2D65F62-5950-405D-8571-1317131F6740}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99D0AED7-9C51-49A1-AB8E-E73FB6ABCED6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99D0AED7-9C51-49A1-AB8E-E73FB6ABCED6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99D0AED7-9C51-49A1-AB8E-E73FB6ABCED6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99D0AED7-9C51-49A1-AB8E-E73FB6ABCED6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {14DEF170-FEF5-4135-ADF3-90202B07B779}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,85 @@
+﻿@using CommunityEventPlanner.Data
+@inherits LayoutComponentBase
+
+<PageTitle>CommunityEventPlanner</PageTitle>
+
+<style>
+    .page {
+        background: url('images/waterfall-5478761.jpg') no-repeat center center fixed;
+        background-size: cover;
+        min-height: 100vh;
+        color: white; /* Ensure text is readable */
+        display: flex;
+        flex-direction: column;
+    }
+
+    .top-row {
+        background-color: rgba(255, 255, 255, 0.8); /* White with some transparency */
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .content {
+        padding: 1rem;
+        flex-grow: 1;
+    }
+
+    .form-control {
+        max-width: 300px; /* Limit the width of the input fields */
+    }
+
+    .user-info {
+        margin-left: 1rem;
+        font-size: 1rem;
+        color: black; /* Adjust color as needed */
+    }
+
+    .footer {
+        background-color: white;
+        padding: 1rem;
+        text-align: center;
+        color: black;
+        width: 100%;
+        position: fixed;
+        bottom: 0;
+    }
+
+        .footer .title-text {
+            color: green;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+</style>
+
+<div class="page">
+    <main>
+        <div class="top-row px-4">
+            <div>
+                @if (AuthenticationStatus.IsLoggedIn)
+                {
+                    <span class="user-info">Logged in as @AuthenticationStatus.Username</span>
+                }
+            </div>
+            <div>
+                @if (!AuthenticationStatus.IsLoggedIn)
+                {
+                    <NavLink href="/login">Login</NavLink>
+                }
+                else
+                {
+                    <NavLink href="/logout">Logout</NavLink>
+                }
+            </div>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+
+    <footer class="footer">
+        <span class="title-text">Community Event Planner</span>
+    </footer>
+</div>

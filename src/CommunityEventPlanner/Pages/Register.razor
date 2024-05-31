@@ -1,0 +1,82 @@
+﻿@page "/register"
+@using Microsoft.EntityFrameworkCore
+@using CommunityEventPlanner.Data
+@inject IDbContextFactory<EventDataContext> EventDataContextFactory;
+@inject NavigationManager NavigationManager;
+
+<PageTitle>User Registration</PageTitle>
+
+<style>
+    .register-panel {
+        background-color: white;
+        color: black; /* Ensure text inside the panel is black */
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        margin: 5rem auto; /* Centers the panel horizontally and adds space from the top */
+    }
+
+    .register-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: url('images/background.jpg') no-repeat center center fixed;
+        background-size: cover;
+    }
+
+    .register-panel h2 {
+        color: black; /* Ensure the title text is black */
+    }
+
+    .register-panel label {
+        color: black; /* Ensure label text is black */
+    }
+</style>
+
+<div class="register-container">
+    <div class="register-panel">
+        <h2 class="text-center">Register</h2>
+        <EditForm Model="@NewUser" OnValidSubmit="RegisterUser">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="Username">Username</label>
+                <InputText id="Username" class="form-control" @bind-Value="NewUser.Username" />
+                <ValidationMessage For="@(() => NewUser.Username)" />
+            </div>
+
+            <div class="form-group">
+                <label for="Email">Email</label>
+                <InputText id="Email" class="form-control" @bind-Value="NewUser.Email" />
+                <ValidationMessage For="@(() => NewUser.Email)" />
+            </div>
+
+            <div class="form-group">
+                <label for="Password">Password</label>
+                <InputText id="Password" type="password" class="form-control" @bind-Value="NewUser.Password" />
+                <ValidationMessage For="@(() => NewUser.Password)" />
+            </div>
+
+            <p></p>
+            <p></p>
+            <button type="submit" class="btn btn-primary btn-block">Register</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private User NewUser { get; set; } = new User();
+
+    private async Task RegisterUser()
+    {
+        var context = await EventDataContextFactory.CreateDbContextAsync();
+        context.Users.Add(NewUser);
+        await context.SaveChangesAsync();
+
+        // Redirect to the index page after successful registration.
+        NavigationManager.NavigateTo("/");
+    }
+}

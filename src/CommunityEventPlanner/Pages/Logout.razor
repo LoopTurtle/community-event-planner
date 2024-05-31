@@ -1,0 +1,16 @@
+﻿@page "/logout"
+@using Microsoft.EntityFrameworkCore
+@using CommunityEventPlanner.Data
+@inject NavigationManager NavigationManager;
+
+@code {
+    protected override void OnInitialized()
+    {
+        // Clear authentication state
+        AuthenticationStatus.IsLoggedIn = false;
+        AuthenticationStatus.Username = null;
+
+        // Redirect to the home page
+        NavigationManager.NavigateTo("/");
+    }
+}
